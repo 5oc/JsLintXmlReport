@@ -1,6 +1,7 @@
 /*jslint browser: true, sloppy: true, indent: 4 */
 
 var S = {
+	
 	forEach: function (elements, fn) {
 		var i;
 		

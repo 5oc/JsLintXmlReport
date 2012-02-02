@@ -5994,8 +5994,8 @@ klass:              do {
             option = {};
         }
 
-        option.indent = 50;
-        option.maxerr = 4;
+        //option.indent = option.indent || 4;
+        //option.maxerr = option.maxerr || 50;
         adsafe_id = '';
         adsafe_may = adsafe_top = adsafe_went = false;
         approved = {};

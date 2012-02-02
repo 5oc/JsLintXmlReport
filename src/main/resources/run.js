@@ -1,25 +1,22 @@
 (function () {
 
 	var report = "",
-			options = {
-				rhino: true,
-				passfail: false,
-				maxerr: 100,
-				indent: 4
-			};
+		apacheIo,
+		jsLintOptions = {
+			bitwise: true, undef: true, unparam: true, sloppy: true, eqeq: true, vars: true,
+			white: true, forin: true, passfail: false, nomen: true, plusplus: true,
+			maxerr: 100, indent: 4
+		};
 
 	function addToReport(text) {
 		report += text + "\n";
 	}
 
 	function lintAllFiles() {
-		var i, file;
+		var i;
 
 		for (i = 0; i < jsFiles.length; i += 1) {
-			file = jsFiles[i];
-			addToReport('\t<file name="' + file + '">');
-			lintFile(file);
-			addToReport('\t</file>');
+			lintFile(jsFiles[i]);
 		}
 	}
 
@@ -32,50 +29,45 @@
 		}
 	}
 
-	function reportErrors() {
-		var i, currentError;
+	function reportErrors(fileName) {
+		var i, currentError, errorCount;
 
-		for (i = 0; i < JSLINT.errors.length; i += 1) {
+		errorCount = JSLINT.errors.length;
+		addToReport('\t<file name="' + fileName + '" errorCount="' + (errorCount - 1) + '">');
+		for (i = 0; i < errorCount; i += 1) {
 			currentError = JSLINT.errors[i];
 
 			if (currentError) {
 				escapeForXml(currentError);
 				addToReport('\t\t<issue char="' + currentError.character + '" evidence="' + currentError.evidence + '" line="' + currentError.line + '" reason="' + currentError.reason + '" />"');
-			} else {
-
-				addToReport('\t\t<issue char="" evidence="" line="" reason="fatal violation detected" />');
 			}
 		}
+		addToReport('\t</file>');
 	}
 
 	function readFile(fileName) {
-		var jq, reader, line, lines;
+		var file, lines;
 
-		jq = new java.io.File(fileName);
-		reader = new java.io.BufferedReader(new java.io.FileReader(jq));
-		line = null;
-		lines = "";
-
-		while ((line = reader.readLine()) != null) {
-			lines += line + "\n";
-		}
+		file = new java.io.File(fileName);
+		lines = apacheIo.FileUtils.readFileToString(file);
+		lines = lines + ""; //to js string
 
 		return lines;
 	}
 
 	function lintFile(fileName) {
-		var good;
-
-		good = JSLINT(readFile(fileName), options);
+		var good = JSLINT(readFile(fileName), jsLintOptions);
 
 		if (!good) {
-			reportErrors();
+			reportErrors(fileName);
 		}
 	}
 
 	function run() {
+		apacheIo = JavaImporter(Packages.org.apache.commons.io);
+
 		addToReport('<?xml version="1.0" encoding="UTF-8" ?>');
-		addToReport('<jslint>');
+		addToReport('<jslint date="' + new Date() + '">');
 		lintAllFiles();
 		addToReport('</jslint>');
 		printStream.print(report);

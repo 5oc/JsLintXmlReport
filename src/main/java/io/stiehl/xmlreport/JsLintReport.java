@@ -6,10 +6,7 @@ import org.apache.log4j.Logger;
 import sun.org.mozilla.javascript.internal.Context;
 import sun.org.mozilla.javascript.internal.Scriptable;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +30,7 @@ public class JsLintReport {
 	public JsLintReport(String filesPath) throws IOException {
 		LOGGER.info("starting with filesPath: " + filesPath);
 		long startTimeStamp = new Date().getTime();
-		
+
 		this.filesPath = filesPath;
 		Context context = initContext();
 		initSourceFiles();
@@ -50,6 +47,7 @@ public class JsLintReport {
 		findJsFilesRecursively(new File(filesPath), files);
 		Scriptable jsFiles = Context.toObject(files.toArray(), scriptable);
 		scriptable.put("jsFiles", scriptable, jsFiles);
+		LOGGER.info(files.size() + " js files found");
 	}
 
 	private Context initContext() {
@@ -63,7 +61,7 @@ public class JsLintReport {
 		String jslint = getFileAsString("jslint.js");
 		String run = getFileAsString("run.js");
 
-		LOGGER.info("evaluateScripts");
+		LOGGER.info("evaluating scripts");
 		context.evaluateString(scriptable, jslint, "jslint.js", 1, null);
 		context.evaluateString(scriptable, run, "run.js", 1, null);
 	}
@@ -92,7 +90,8 @@ public class JsLintReport {
 		final File[] children = file.listFiles();
 		if (children != null) {
 			for (File child : children) {
-				if (child.getName().toLowerCase().endsWith(".js")) {
+				String fileName = child.getName();
+				if (fileName.toLowerCase().endsWith(".js") && !fileName.contains("-min")) {
 					all.add(child);
 					LOGGER.info("add file for analyses: " + child.getPath());
 				}

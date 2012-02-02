@@ -2,27 +2,28 @@ package io.stiehl.xmlreport;
 
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import sun.org.mozilla.javascript.internal.Context;
 import sun.org.mozilla.javascript.internal.Scriptable;
 
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
 public class JsLintReport {
-	private static final String BASE_PATH = "/Users/5oc/JavaApps/JsLintXmlReport/";
-	private static final String RESOURCE_PATH = BASE_PATH + "resources/";
-	private static final String JS_FILES_PATH = BASE_PATH + "files/";
-	private static final String REPORT_PATH = BASE_PATH + "report/";
+	private static final String JS_FILES_PATH = "/Users/5oc/JavaApps/JsLintXmlReport/files/";
+	private static Logger LOGGER = Logger.getLogger(JsLintReport.class);
 	private Scriptable scriptable;
 
 	public static void main(String[] args) throws IOException {
 		new JsLintReport();
 	}
 
-
 	public JsLintReport() throws IOException {
+		LOGGER.info("starting");
 		Context context = initContext();
 		initSourceFiles();
 		ByteArrayOutputStream outputStream = addPrintStream();
@@ -45,20 +46,22 @@ public class JsLintReport {
 	}
 
 	private void evaluateScripts(Context context) throws IOException {
-		String jslint = getFileAsString(RESOURCE_PATH + "jslint.js");
-		String run = getFileAsString(RESOURCE_PATH + "run.js");
+		String jslint = getFileAsString("jslint.js");
+		String run = getFileAsString("run.js");
 		
 		context.evaluateString(scriptable, jslint, "jslint.js", 1, null);
 		context.evaluateString(scriptable, run, "run.js", 1, null);
 	}
 
 	private void writeStringToFile(String text) throws IOException {
-		File reportFile = new File(REPORT_PATH + "report.xml");
+		File reportFile = new File("report.xml");
+		LOGGER.info("writing report to: " + reportFile.getPath());
 		FileUtils.writeStringToFile(reportFile, text);
 	}
 
-	protected String getFileAsString(String path) throws IOException {
-		return FileUtils.readFileToString(new File(path), "UTF-8");
+	protected String getFileAsString(String fileName) throws IOException {
+		URL resource = this.getClass().getClassLoader().getResource(fileName);
+		return FileUtils.readFileToString(new File(resource.getPath()), "UTF-8");
 	}
 
 	private ByteArrayOutputStream addPrintStream() {
@@ -76,6 +79,7 @@ public class JsLintReport {
 			for (File child : children) {
 				if (child.getName().toLowerCase().endsWith(".js")) {
 					all.add(child);
+					LOGGER.info("add file for analyses: " + child.getPath());
 				}
 				findJsFilesRecursively(child, all);
 			}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jslint>
+	<file name="/Users/5oc/JavaApps/JsLintXmlReport/files/s.js">
+		<issue char="1" evidence="	" line="4" reason="Unexpected '(space)'." />"
+		<issue char="51" evidence="	forEach: function (elements, fn) {" line="5" reason="Expected 'forEach' at column 9, not column 51." />"
+		<issue char="101" evidence="		var i;" line="6" reason="Expected 'var' at column 13, not column 101." />"
+		<issue char="1" evidence="		" line="7" reason="Unexpected '(space)'." />"
+		<issue char="1" evidence="undefined" line="7" reason="Too many errors. (11% scanned)." />"
+		<issue char="" evidence="" line="" reason="fatal violation detected" />
+	</file>
+</jslint>

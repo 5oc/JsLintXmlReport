@@ -1,12 +1,12 @@
 (function () {
 
 	var report = "",
-		options = {
-			rhino: true,
-			passfail: false,
-			maxerr: 100,
-			indent: 4
-		};
+			options = {
+				rhino: true,
+				passfail: false,
+				maxerr: 100,
+				indent: 4
+			};
 
 	function addToReport(text) {
 		report += text + "\n";
@@ -23,6 +23,15 @@
 		}
 	}
 
+	function escapeForXml(currentError) {
+		if (currentError.reason) {
+			currentError.reason = currentError.reason.replace(/"/g, '\"');
+		}
+		if (currentError.evidence) {
+			currentError.evidence = currentError.evidence.replace(/"/g, '\"');
+		}
+	}
+
 	function reportErrors() {
 		var i, currentError;
 
@@ -30,6 +39,7 @@
 			currentError = JSLINT.errors[i];
 
 			if (currentError) {
+				escapeForXml(currentError);
 				addToReport('\t\t<issue char="' + currentError.character + '" evidence="' + currentError.evidence + '" line="' + currentError.line + '" reason="' + currentError.reason + '" />"');
 			} else {
 
@@ -49,13 +59,13 @@
 		while ((line = reader.readLine()) != null) {
 			lines += line + "\n";
 		}
-		
+
 		return lines;
 	}
 
 	function lintFile(fileName) {
 		var good;
-		
+
 		good = JSLINT(readFile(fileName), options);
 
 		if (!good) {

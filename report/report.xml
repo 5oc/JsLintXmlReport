@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jslint>
+	<file name="/Users/5oc/JavaApps/JsLintXmlReport/files/asd/resultList.js">
+	</file>
+	<file name="/Users/5oc/JavaApps/JsLintXmlReport/files/expose.js">
+		<issue char="301" evidence="						case 'HOUSE_BUY':" line="451" reason="Expected 'case' at column 251, not column 301." />"
+		<issue char="301" evidence="						case 'HOUSE_RENT':" line="453" reason="Expected 'case' at column 251, not column 301." />"
+		<issue char="351" evidence="							referencePriceResponse.maxPrice = nullSaveMax(offerPrice, referencePriceResponse.maxPrice);" line="454" reason="Expected 'referencePriceResponse' at column 301, not column 351." />"
+		<issue char="351" evidence="							renderOfferPrice(offerPrice, referencePriceResponse.maxPrice, eur);" line="455" reason="Expected 'renderOfferPrice' at column 301, not column 351." />"
+		<issue char="351" evidence="undefined" line="455" reason="Too many errors. (24% scanned)." />"
+		<issue char="" evidence="" line="" reason="fatal violation detected" />
+	</file>
+</jslint>

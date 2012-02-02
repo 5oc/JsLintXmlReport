@@ -8,4 +8,36 @@
 		<issue char="1" evidence="undefined" line="7" reason="Too many errors. (11% scanned)." />"
 		<issue char="" evidence="" line="" reason="fatal violation detected" />
 	</file>
+	<file name="/Users/5oc/JavaApps/JsLintXmlReport/src/main/resources/jslint.js">
+		<issue char="5" evidence="    'use strict';" line="328" reason="Expected 'use strict' at column 101, not column 5." />"
+		<issue char="5" evidence="    function array_to_object(array, value) {" line="330" reason="Expected 'function' at column 101, not column 5." />"
+		<issue char="9" evidence="        var i, length = array.length, object = {};" line="334" reason="Expected 'var' at column 151, not column 9." />"
+		<issue char="9" evidence="        for (i = 0; i < length; i += 1) {" line="335" reason="Expected 'for' at column 151, not column 9." />"
+		<issue char="9" evidence="undefined" line="335" reason="Too many errors. (5% scanned)." />"
+		<issue char="" evidence="" line="" reason="fatal violation detected" />
+	</file>
+	<file name="/Users/5oc/JavaApps/JsLintXmlReport/src/main/resources/run.js">
+		<issue char="151" evidence="			options = {" line="4" reason="Expected 'options' at column 101, not column 151." />"
+		<issue char="201" evidence="				rhino: true," line="5" reason="Expected 'rhino' at column 151, not column 201." />"
+		<issue char="208" evidence="				rhino: true," line="5" reason="Unexpected /*property*/ 'rhino'." />"
+		<issue char="201" evidence="				passfail: false," line="6" reason="Expected 'passfail' at column 151, not column 201." />"
+		<issue char="201" evidence="undefined" line="6" reason="Too many errors. (6% scanned)." />"
+		<issue char="" evidence="" line="" reason="fatal violation detected" />
+	</file>
+	<file name="/Users/5oc/JavaApps/JsLintXmlReport/target/classes/jslint.js">
+		<issue char="5" evidence="    'use strict';" line="328" reason="Expected 'use strict' at column 101, not column 5." />"
+		<issue char="5" evidence="    function array_to_object(array, value) {" line="330" reason="Expected 'function' at column 101, not column 5." />"
+		<issue char="9" evidence="        var i, length = array.length, object = {};" line="334" reason="Expected 'var' at column 151, not column 9." />"
+		<issue char="9" evidence="        for (i = 0; i < length; i += 1) {" line="335" reason="Expected 'for' at column 151, not column 9." />"
+		<issue char="9" evidence="undefined" line="335" reason="Too many errors. (5% scanned)." />"
+		<issue char="" evidence="" line="" reason="fatal violation detected" />
+	</file>
+	<file name="/Users/5oc/JavaApps/JsLintXmlReport/target/classes/run.js">
+		<issue char="151" evidence="			options = {" line="4" reason="Expected 'options' at column 101, not column 151." />"
+		<issue char="201" evidence="				rhino: true," line="5" reason="Expected 'rhino' at column 151, not column 201." />"
+		<issue char="208" evidence="				rhino: true," line="5" reason="Unexpected /*property*/ 'rhino'." />"
+		<issue char="201" evidence="				passfail: false," line="6" reason="Expected 'passfail' at column 151, not column 201." />"
+		<issue char="201" evidence="undefined" line="6" reason="Too many errors. (6% scanned)." />"
+		<issue char="" evidence="" line="" reason="fatal violation detected" />
+	</file>
 </jslint>

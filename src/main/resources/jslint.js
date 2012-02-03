@@ -1164,6 +1164,7 @@ var JSLINT = (function () {
         if (warnings >= option.maxerr) {
             quit(bundle.too_many, line, character);
         }
+
         return warning;
     }
 

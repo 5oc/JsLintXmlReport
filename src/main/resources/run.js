@@ -22,10 +22,10 @@
 
 	function escapeForXml(currentError) {
 		if (currentError.reason) {
-			currentError.reason = currentError.reason.replace(/"/g, '\"');
+			currentError.reason = currentError.reason.replace(/"/g, "'");
 		}
 		if (currentError.evidence) {
-			currentError.evidence = currentError.evidence.replace(/"/g, '\"');
+			currentError.evidence = currentError.evidence.replace(/"/g, "'");
 		}
 	}
 
@@ -39,7 +39,7 @@
 
 			if (currentError) {
 				escapeForXml(currentError);
-				addToReport('\t\t<issue char="' + currentError.character + '" evidence="' + currentError.evidence + '" line="' + currentError.line + '" reason="' + currentError.reason + '" />"');
+				addToReport('\t\t<issue char="' + currentError.character + '" evidence="' + currentError.evidence + '" line="' + currentError.line + '" reason="' + currentError.reason + '" />');
 			}
 		}
 		addToReport('\t</file>');

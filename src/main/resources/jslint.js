@@ -1,5 +1,5 @@
 // jslint.js
-// 2012-01-29
+// 2012-02-03
 
 // Copyright (c) 2002 Douglas Crockford  (www.JSLint.com)
 
@@ -1157,14 +1157,12 @@ var JSLINT = (function () {
         warning.reason = warning.raw.supplant(warning);
         JSLINT.errors.push(warning);
         if (option.passfail) {
-
             quit(bundle.stopping, line, character);
         }
         warnings += 1;
         if (warnings >= option.maxerr) {
             quit(bundle.too_many, line, character);
         }
-
         return warning;
     }
 
@@ -2300,17 +2298,17 @@ klass:              do {
                 open: true,
                 was: indent
             };
-        } else if (mode === 'statement') {
-            indent = {
-                at: indent.at,
-                open: true,
-                was: indent
-            };
         } else if (!indent) {
             indent = {
                 at: 1,
                 mode: 'statement',
                 open: true
+            };
+        } else if (mode === 'statement') {
+            indent = {
+                at: indent.at,
+                open: true,
+                was: indent
             };
         } else {
             open = mode === 'var' || next_token.line !== token.line;
@@ -4488,7 +4486,7 @@ klass:              do {
     });
 
     disrupt_stmt('return', function () {
-        if (funct === global_funct) {
+        if (funct === global_funct && xmode !== 'scriptstring') {
             warn('unexpected_a', this);
         }
         this.arity = 'statement';
@@ -5979,7 +5977,7 @@ klass:              do {
         add_to_predefined(standard);
         property = {};
         if (the_option) {
-            option = the_option;
+            option = Object.create(the_option);
             predef = option.predef;
             if (predef) {
                 if (Array.isArray(predef)) {
@@ -5995,8 +5993,8 @@ klass:              do {
             option = {};
         }
 
-        //option.indent = option.indent || 4;
-        //option.maxerr = option.maxerr || 50;
+        option.indent = +option.indent || 4;
+        option.maxerr = +option.maxerr || 50;
         adsafe_id = '';
         adsafe_may = adsafe_top = adsafe_went = false;
         approved = {};
@@ -6367,7 +6365,7 @@ klass:              do {
     };
     itself.jslint = itself;
 
-    itself.edition = '2012-01-29';
+    itself.edition = '2012-02-03';
 
     return itself;
 }());

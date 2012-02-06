@@ -3,20 +3,26 @@ package io.stiehl.xmlreport;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import sun.org.mozilla.javascript.internal.Context;
-import sun.org.mozilla.javascript.internal.Scriptable;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Locale;
 
 public class JsLintReport {
 	private static Logger LOGGER = Logger.getLogger(JsLintReport.class);
-	private String filesPath;
-	private Scriptable scriptable;
+
+	private Context context;
+	private Collection<File> jsFiles;
+	private ByteArrayOutputStream outputStream;
+	private PrintStream printStream;
 
 	public static void main(String[] args) throws IOException {
 		String filesPath = "./";
@@ -28,45 +34,72 @@ public class JsLintReport {
 	}
 
 	public JsLintReport(String filesPath) throws IOException {
-		LOGGER.info("starting with filesPath: " + filesPath);
 		long startTimeStamp = new Date().getTime();
+		LOGGER.info("starting with filesPath: " + filesPath);
 
-		this.filesPath = filesPath;
-		Context context = initContext();
-		initSourceFiles();
-
-		ByteArrayOutputStream outputStream = addPrintStream();
-		evaluateScripts(context);
-		writeStringToFile(outputStream.toString());
-
+		initStreams();
+		findJsFiles(filesPath);
+		printXmlHead();
+		lintJSFiles(initContext());
+		writeReport(outputStream.toString());
+		
 		LOGGER.info("ready within: " + ((new Date().getTime() - startTimeStamp) / 1000) + "sec");
 	}
 
-	private void initSourceFiles() {
-		final Collection<File> files = new ArrayList<File>();
-		findJsFilesRecursively(new File(filesPath), files);
-		Scriptable jsFiles = Context.toObject(files.toArray(), scriptable);
-		scriptable.put("jsFiles", scriptable, jsFiles);
-		LOGGER.info(files.size() + " js files found");
+	private void printXmlHead() {
+		printStream.println("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+		printStream.println("<jslint date=\"" + new Date() + "\" files=\"" + jsFiles.size() + "\">");
 	}
 
-	private Context initContext() {
-		Context context = Context.enter();
-		context.setLocale(Locale.GERMANY);
-		scriptable = context.initStandardObjects();
-		return context;
+	private void findJsFiles(String filesPath) {
+		jsFiles = new ArrayList<File>();
+		findJsFilesRecursively(new File(filesPath), jsFiles);
+		LOGGER.info(jsFiles.size() + " js files found");
 	}
 
-	private void evaluateScripts(Context context) throws IOException {
+	private String readFile(File file) throws IOException {
+		return FileUtils.readFileToString(file, "UTF-8");
+	}
+
+	private void lintJSFiles(ScriptableObject scriptable) throws IOException {
+		for (File jsFile : jsFiles) {
+			String jsFileName = jsFile.getPath();
+			LOGGER.info("evaluating script: " + jsFileName);
+
+			putObjectIntoJsContext(jsFileName, "jsFileName", scriptable);
+			putObjectIntoJsContext(readFile(jsFile), "jsFileAsString", scriptable);
+			evalJsLintRunFile(scriptable);
+		}
+
+		Context.exit();
+		printStream.println("</jslint>");
+	}
+
+	private void evalJsLintRunFile(ScriptableObject scriptable) {
+		context.evaluateString(scriptable, "S.runJsLint();", "call", 1, null);
+	}
+
+	private void putObjectIntoJsContext(Object object, String name, ScriptableObject scriptable) {
+		Scriptable extScriptable = Context.toObject(object, scriptable);
+		scriptable.put(name, scriptable, extScriptable);
+	}
+
+	private ScriptableObject initContext() throws IOException {
+		context = Context.enter();
+		ScriptableObject scriptable = context.initStandardObjects();
+
+		Scriptable scStream = Context.toObject(printStream, scriptable);
+		scriptable.put("printStream", scriptable, scStream);
+
 		String jslint = getFileAsString("jslint.js");
-		String run = getFileAsString("run.js");
-
-		LOGGER.info("evaluating scripts");
+		String runLint = getFileAsString("run.js");
 		context.evaluateString(scriptable, jslint, "jslint.js", 1, null);
-		context.evaluateString(scriptable, run, "run.js", 1, null);
+		context.evaluateString(scriptable, runLint, "run.js", 1, null);
+
+		return scriptable;
 	}
 
-	private void writeStringToFile(String text) throws IOException {
+	private void writeReport(String text) throws IOException {
 		File reportFile = new File("report.xml");
 		LOGGER.info("writing report to: " + reportFile.getPath());
 		FileUtils.writeStringToFile(reportFile, text);
@@ -77,13 +110,9 @@ public class JsLintReport {
 		return FileUtils.readFileToString(new File(resource.getPath()), "UTF-8");
 	}
 
-	private ByteArrayOutputStream addPrintStream() {
-		ByteArrayOutputStream buff = new ByteArrayOutputStream();
-		PrintStream printStream = new PrintStream(buff);
-		Scriptable stream = Context.toObject(printStream, scriptable);
-		scriptable.put("printStream", scriptable, stream);
-
-		return buff;
+	private void initStreams() {
+		outputStream = new ByteArrayOutputStream();
+		printStream = new PrintStream(outputStream);
 	}
 
 	private static void findJsFilesRecursively(File file, Collection<File> all) {

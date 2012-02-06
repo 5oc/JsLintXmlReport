@@ -1,7 +1,7 @@
-(function () {
+var S = S || {};
+S.runJsLint = function () {
 
 	var report = "",
-		apacheIo,
 		jsLintOptions = {
 			bitwise: true, undef: true, unparam: true, sloppy: true, eqeq: true, vars: true,
 			white: true, forin: true, passfail: false, nomen: true, plusplus: true,
@@ -10,14 +10,6 @@
 
 	function addToReport(text) {
 		report += text + "\n";
-	}
-
-	function lintAllFiles() {
-		var i;
-
-		for (i = 0; i < jsFiles.length; i += 1) {
-			lintFile(jsFiles[i]);
-		}
 	}
 
 	function escapeForXml(currentError) {
@@ -33,46 +25,34 @@
 		var i, currentError, errorCount;
 
 		errorCount = JSLINT.errors.length;
-		addToReport('\t<file name="' + fileName + '" errorCount="' + (errorCount - 1) + '">');
+		addToReport('\t<file name="' + fileName + '" errorCount="' + errorCount + '">');
 		for (i = 0; i < errorCount; i += 1) {
 			currentError = JSLINT.errors[i];
 
 			if (currentError) {
 				escapeForXml(currentError);
-				addToReport('\t\t<issue char="' + currentError.character + '" evidence="' + currentError.evidence + '" line="' + currentError.line + '" reason="' + currentError.reason + '" />');
+				currentError.evidence = currentError.evidence || "";
+				addToReport('\t\t<issue line="' + currentError.line + '" char="' + currentError.character + '" reason="' + currentError.reason + '" evidence="' + currentError.evidence + '" />');
 			}
 		}
 		addToReport('\t</file>');
 	}
 
-	function readFile(fileName) {
-		var file, lines;
-
-		file = new java.io.File(fileName);
-		lines = apacheIo.FileUtils.readFileToString(file);
-		lines = lines + ""; //to js string
-
-		return lines;
-	}
-
-	function lintFile(fileName) {
-		var good = JSLINT(readFile(fileName), jsLintOptions);
-
-		if (!good) {
-			reportErrors(fileName);
-		}
+	function lintFile(jsFile, fileName) {
+		JSLINT(jsFile, jsLintOptions);
+		reportErrors(fileName);
 	}
 
 	function run() {
-		apacheIo = JavaImporter(Packages.org.apache.commons.io);
+		var jsFile, fileName;
+		
+		jsFile = jsFileAsString + "\n"; //force to cast to js-string-object
+		fileName = jsFileName;
 
-		addToReport('<?xml version="1.0" encoding="UTF-8" ?>');
-		addToReport('<jslint date="' + new Date() + '">');
-		lintAllFiles();
-		addToReport('</jslint>');
+		lintFile(jsFile, fileName);
 		printStream.print(report);
 	}
 
-	run();
 
-}());
+	run();
+};

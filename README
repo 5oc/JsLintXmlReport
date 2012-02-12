@@ -1,2 +1,5 @@
 Creates a xml file containing a jslint report.
 This should be usefully to integrate jslint into TeamCity.
+
+This is only a playground. If you are looking for a useable jslin-xml-tool always prefere jslint4java:
+https://github.com/happygiraffe/jslint4java
